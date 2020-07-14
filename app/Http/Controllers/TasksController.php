@@ -66,11 +66,12 @@ class TasksController extends Controller
             'content' => 'required | max:255',
         ]);
         
-        // タスクを作成
-        $task = new Task;
-        $task->status = $request->status;
-        $task->content = $request->content;
-        $task->save();
+        // 認証済みユーザ(閲覧者)の投稿としてタスクを作成
+        $request->user()->tasks()->create([
+            'status' => $request->status,
+            'content' => $request->content,
+        ]);
+        
         
         // トップページへリダイレクトさせる
         return redirect('/');
@@ -153,9 +154,12 @@ class TasksController extends Controller
     public function destroy($id)
     {
         // idの値でタスクを検索して取得
-        $task = Task::findOrFail($id);
-        // タスクを削除
-        $task->delete();
+        $task = \App\Task::findOrFail($id);
+        
+        // 認証済みユーザ(閲覧者)がその投稿の所有者である場合は、タスクを削除
+        if(\Auth::id() === $task->user_id){
+            $task->delete();
+        }
         
         // トップページへリダイレクトさせる
         return redirect('/');
