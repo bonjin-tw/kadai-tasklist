@@ -2,7 +2,9 @@
 
 @section('content')
     @if(Auth::check())
-        {{ Auth::user()->name }}
+        <h3>{{ Auth::user()->name }}</h3>
+        {{-- 投稿一覧 --}}
+        @include('tasks.index')
     @else
         <div class="center jumbotron">
             <div class="text-center">
