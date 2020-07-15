@@ -88,12 +88,17 @@ class TasksController extends Controller
     public function show($id)
     {
         // idの値でタスクを検索して取得
-        $task = Task::findOrFail($id);
+        $task = \App\Task::findOrFail($id);
         
-        // タスク詳細ビューでそれを表示
-        return view('tasks.show',[
-            'task' => $task,
-        ]);
+        // 認証済みユーザがそのタスクの所有者である場合は、登校を取得して表示する
+        if(\Auth::user()->id === $task->user_id){
+            return view('tasks.show',[
+                'task' => $task,
+            ]);
+        }
+        else{
+            return redirect('/');
+        }
     }
 
     /**
@@ -107,12 +112,17 @@ class TasksController extends Controller
     public function edit($id)
     {
         // idの値でタスクを検索して取得
-        $task = Task::findOrFail($id);
+        $task = \App\Task::findOrFail($id);
         
-        // タスク編集ビューでそれを表示
-        return view('tasks.edit',[
-            'task' => $task,
-        ]);
+        // 認証済みユーザがそのタスクの所有者である場合は、更新画面を表示
+        if(\Auth::user()->id === $task->user_id){
+            return view('tasks.edit',[
+                'task' => $task,
+            ]);
+        }
+        else{
+            return redirect('/');
+        }
     }
 
     /**
